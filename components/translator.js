@@ -18,16 +18,14 @@ const usToUk = Object.assign(
   reverseObj(britishOnly),
 );
 const ukToUs = reverseObj(usToUk);
-const usToUkTitle = Object.assign({}, americanToBritishTitles);
-const ukToUsTitle = Object.assign({}, reverseObj(americanToBritishTitles));
+const toUkTitle =  americanToBritishTitles;
+const toUsTitle = Object.assign({}, reverseObj(americanToBritishTitles));
 
 class Translator {
-  translate(text, dict, to, title) {
-    let result = [];
-    const newText = [];
-    const timeRegx = /([1-9]|1[012])(?<format>.)([0-5][0-9])/g;
+  translate(text, dict, to, titles) {
 
     // chane time format
+		const timeRegx = /([1-9]|1[012])(?<format>.)([0-5][0-9])/g;
     const timeformat = timeRegx.exec(text)?.groups.format;
     if (to == 'uk') {
       if (timeformat !== '.') {
@@ -38,54 +36,49 @@ class Translator {
         text = text.replace(timeRegx, '<span class="highlight">$1:$3</span>');
       }
     }
-    // // replace title
+
+    // replace title/honorifics
     let textArr = text.split(' ');
     textArr.forEach((te) => {
-      if (title.hasOwnProperty(te)) {
-        const titleText = title[te].replace(title[te][0], title[te][0].toUpperCase());
-        text = text.replace(te, `<span class="highlight">${titleText}</span>`);
+			te = te.toLowerCase();
+      if (titles.hasOwnProperty(te)) {
+        const regex = new RegExp(`${te}`, 'gi');
+				const preTitle = titles[te];
+				const titleText = preTitle.replace(preTitle[0], preTitle[0].toUpperCase());
+        text = text.replace(regex, `<span class="highlight">${titleText}</span>`);	
       }
     });
+		
 
     // change single word (word with out spaces)
     textArr = text.split(' ');
     textArr.forEach((te) => {
       if (dict.hasOwnProperty(te)) {
-        text = text.replace(te, `<span class="highlight">${dict[te]}</span>`);
+				const regex = new RegExp(`${te}`, 'gi');
+        text = text.replace(regex, `<span class="highlight">${dict[te]}</span>`);
       }
     });
-
-    result.push(text);
 
     // change word with spaces
     const keysWithSpace = Object.keys(dict).filter((key) => key.includes(' '));
     keysWithSpace.forEach((key) => {
-      const textmatch = result[0].includes(key);
+      const textmatch = text.includes(key);
       if (textmatch) {
-        result.push(
-          result[0].replace(key, `<span class="highlight">${dict[key]}</span>`),
-        );
-        result.shift();
+				const regex = new RegExp(`${key}`, 'gi');
+				text = text.replace(regex,`<span class="highlight">${dict[key]}</span>`);
       }
     });
 
-    return result[0];
+		return text;
   }
 
   toAmerican(text) {
-    return this.translate(text, ukToUs, 'us', ukToUsTitle);
+    return this.translate(text, ukToUs, 'us', toUsTitle);
   }
 
   toBritish(text) {
-    return this.translate(text, usToUk, 'uk', usToUkTitle);
+    return this.translate(text, usToUk, 'uk', toUkTitle);
   }
 }
-const transla = new Translator();
-const text = 'He agonized dr. over the aging armored 12:30 cars soda pop parking garage';
-// const text2 =
-//   'He <span class="highlight">agonised</span> over the <span class="highlight">ageing</span> <span class="highlight">armoured</span> cars <span class="highlight">soft drink</span> parking garage';
-const translated = transla.toBritish(text, usToUk);
-
-console.log(translated);
 
 module.exports = Translator;
