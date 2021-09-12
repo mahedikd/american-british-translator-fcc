@@ -3,12 +3,14 @@ const americanToBritishSpelling = require('./american-to-british-spelling.js');
 const americanToBritishTitles = require('./american-to-british-titles.js');
 const britishOnly = require('./british-only.js');
 
+// -----
 function reverseObj(obj) {
   return Object.assign(
     {},
     ...Object.entries(obj).map(([key, value]) => ({ [value]: key })),
   );
 }
+// -----
 const usToUk = Object.assign(
   {},
   americanOnly,
@@ -16,8 +18,8 @@ const usToUk = Object.assign(
   reverseObj(britishOnly),
 );
 const ukToUs = reverseObj(usToUk);
-const usToUkTitle = Object.assign({},americanToBritishTitles,{Doctor:'Dr.'}) 
-const ukToUsTitle = Object.assign({},americanToBritishTitles,{Doctor:'Dr'},reverseObj(americanToBritishTitles)) ;
+const usToUkTitle = Object.assign({}, americanToBritishTitles);
+const ukToUsTitle = Object.assign({}, reverseObj(americanToBritishTitles));
 
 class Translator {
   translate(text, dict, to, title) {
@@ -36,7 +38,7 @@ class Translator {
         text = text.replace(timeRegx, '<span class="highlight">$1:$3</span>');
       }
     }
-    // replace title
+    // // replace title
     let textArr = text.split(' ');
     textArr.forEach((te) => {
       if (title.hasOwnProperty(te)) {
@@ -47,15 +49,13 @@ class Translator {
 
     // change single word (word with out spaces)
     textArr = text.split(' ');
-    textArr.forEach((text) => {
-      if (dict.hasOwnProperty(text)) {
-        newText.push(`<span class="highlight">${dict[text]}</span>`);
-      } else {
-        newText.push(text);
+    textArr.forEach((te) => {
+      if (dict.hasOwnProperty(te)) {
+        text = text.replace(te, `<span class="highlight">${dict[te]}</span>`);
       }
     });
 
-    result.push(newText.join(' '));
+    result.push(text);
 
     // change word with spaces
     const keysWithSpace = Object.keys(dict).filter((key) => key.includes(' '));
@@ -80,12 +80,12 @@ class Translator {
     return this.translate(text, usToUk, 'uk', usToUkTitle);
   }
 }
-// const transla = new Translator();
-// const text = 'He agonized dr. over the aging armored 12:30 cars soda pop parking garage';
-// // const text2 =
-// //   'He <span class="highlight">agonised</span> over the <span class="highlight">ageing</span> <span class="highlight">armoured</span> cars <span class="highlight">soft drink</span> parking garage';
-// const translated = transla.toBritish(text, usToUk);
+const transla = new Translator();
+const text = 'He agonized dr. over the aging armored 12:30 cars soda pop parking garage';
+// const text2 =
+//   'He <span class="highlight">agonised</span> over the <span class="highlight">ageing</span> <span class="highlight">armoured</span> cars <span class="highlight">soft drink</span> parking garage';
+const translated = transla.toBritish(text, usToUk);
 
-// console.log(translated);
+console.log(translated);
 
 module.exports = Translator;
