@@ -7,7 +7,7 @@ module.exports = function (app) {
 
   app.route('/api/translate').post((req, res) => {
     let { locale, text } = req.body;
-    text = text.toLowerCase();
+    // text = text.toLowerCase(); 
     const localeShoudGet = ['american-to-british', 'british-to-american'];
 
     if (!locale || text == undefined) {
@@ -29,9 +29,9 @@ module.exports = function (app) {
     // translation = `${translation.slice(0, 0).toUpperCase()}${translation.slice(1)}`;
 
     if (!translation || translation == text) {
-      res.json({ translation: 'Everything looks good to me!' });
+      res.json({ text,translation: 'Everything looks good to me!' });
     } else {
-      res.json({ translation });
+      res.json({ text ,translation });
     }
 
     // -----

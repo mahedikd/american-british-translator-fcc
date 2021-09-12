@@ -16,8 +16,8 @@ const usToUk = Object.assign(
   reverseObj(britishOnly),
 );
 const ukToUs = reverseObj(usToUk);
-const usToUkTitle = americanToBritishTitles;
-const ukToUsTitle = reverseObj(americanToBritishTitles);
+const usToUkTitle = Object.assign({},americanToBritishTitles,{Doctor:'Dr.'}) 
+const ukToUsTitle = Object.assign({},americanToBritishTitles,{Doctor:'Dr'},reverseObj(americanToBritishTitles)) ;
 
 class Translator {
   translate(text, dict, to, title) {
@@ -80,12 +80,12 @@ class Translator {
     return this.translate(text, usToUk, 'uk', usToUkTitle);
   }
 }
-const transla = new Translator();
-const text = 'He agonized dr. over the aging armored 12:30 cars soda pop parking garage';
-// const text2 =
-//   'He <span class="highlight">agonised</span> over the <span class="highlight">ageing</span> <span class="highlight">armoured</span> cars <span class="highlight">soft drink</span> parking garage';
-const translated = transla.toBritish(text, usToUk);
+// const transla = new Translator();
+// const text = 'He agonized dr. over the aging armored 12:30 cars soda pop parking garage';
+// // const text2 =
+// //   'He <span class="highlight">agonised</span> over the <span class="highlight">ageing</span> <span class="highlight">armoured</span> cars <span class="highlight">soft drink</span> parking garage';
+// const translated = transla.toBritish(text, usToUk);
 
-console.log(translated);
+// console.log(translated);
 
 module.exports = Translator;
